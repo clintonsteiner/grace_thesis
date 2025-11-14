@@ -1,0 +1,26 @@
+{
+  "name": "short-series",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.36.2",
+    "astro": "^5.15.4",
+    "astro-embed": "^0.9.1",
+    "sharp": "^0.34.5",
+    "starlight-blog": "^0.25.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2"
+  }
+}

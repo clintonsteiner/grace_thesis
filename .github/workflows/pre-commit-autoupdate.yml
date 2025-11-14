@@ -1,0 +1,49 @@
+---
+name: Pre-commit Autoupdate
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv based on the version defined in pyproject.toml
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run pre-commit autoupdate
+        run: |
+          uv run --group dev pre-commit autoupdate
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          branch="update/pre-commit-$(date +%Y%m%d)"
+          git checkout -b "$branch"
+          git add .pre-commit-config.yaml
+          git commit -m "chore: pre-commit autoupdate"
+          git push -u origin "$branch"
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git rev-parse --verify HEAD >/dev/null 2>&1 && [ "$(git log origin/master..HEAD --oneline | wc -l)" -gt 0 ]; then
+            gh pr create --fill --base master --head "$branch"
+          else
+            echo "No new commits to create PR"
+          fi
